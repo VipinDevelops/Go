@@ -6,7 +6,7 @@ package main
 // "math"
 // "time"
 
-// // //  const
+// //  const
 // const s string = "constant"
 
 // // // Functions
