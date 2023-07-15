@@ -1,5 +1,10 @@
 package main
 
+import (
+	"fmt"
+	"time"
+)
+
 // "unicode/utf8"
 
 // "fmt"
@@ -132,14 +137,88 @@ package main
 // 	fmt.Println(g.perim())
 // }
 
-// // // Struct Embedding ... incomplete
+// // // // Struct Embedding
 // type base struct {
-// 	name int
+// 	num int
 // }
 
-// func (b base) describe() string {
-// 	return fmt.Sprintf("base with name=%b", b.name)
+// func (b base) describer() string {
+// 	return fmt.Sprintf("base with num=%v", b.num)
 // }
+
+// type container struct {
+// 	base
+// 	str string
+// }
+
+// func (c container) describer() string {
+// 	return fmt.Sprintf("container with num=%v, str=%v", c.num, c.str)
+// }
+
+// // //  Generics //  //
+// func MapKeys[K comparable, V any](m map[K]V) []K {
+// 	r := make([]K, 0, len(m))
+// 	for k := range m {
+// 		r = append(r, k)
+// 	}
+// 	return r
+// }
+
+// type List[T any] struct {
+// 	head, tail *element[T]
+// }
+// type element[T any] struct {
+// 	next *element[T]
+// 	val  T
+// }
+
+// func (lst *List[T]) Push(v T) {
+// 	if lst.tail == nil {
+// 		lst.head = &element[T]{val: v}
+// 		lst.tail = lst.head
+// 	} else {
+// 		lst.tail.next = &element[T]{val: v}
+// 		lst.tail = lst.tail.next
+// 	}
+// }
+// func (lst *List[T]) GetAll() []T {
+// 	var elems []T
+// 	for e := lst.head; e != nil; e = e.next {
+// 		elems = append(elems, e.val)
+// 	}
+// 	return elems
+// }
+
+// // //  Errors //  //
+// func f1(arg int) (int, error) {
+// 	if arg == 42 {
+// 		return -1, errors.New("cant' work with 42")
+// 	}
+// 	return arg + 3, nil
+// }
+
+// type argError struct {
+// 	arg  int
+// 	prob string
+// }
+
+// func (e *argError) Error() string {
+// 	return fmt.Sprintf("%d - %s", e.arg, e.prob)
+// }
+
+// func f2(arg int) (int, error) {
+// 	if arg == 42 {
+// 		return -1, &argError{arg, "cant work with it"}
+// 	}
+// 	return arg + 3, nil
+// }
+
+// // // Goroutines // //
+func f(from string) {
+	for i := 0; i < 3; i++ {
+		fmt.Println(from, ":", i)
+	}
+}
 
 func main() {
 	//// // // Hello world //////////////
@@ -526,4 +605,74 @@ func main() {
 	// c := circle{radius: 5}
 	// measure(r)
 	// measure(c)
+
+	// // //  Struct Embedding //  //
+	// co := container{
+	// 	base: base{
+	// 		num: 1,
+	// 	},
+	// 	str: "some name",
+	// }
+	// fmt.Printf("co={num: %v, str: %v}\n", co.num, co.str)
+
+	// fmt.Println("also num:", co.base.num)
+
+	// fmt.Println("describe:", co.describer())
+
+	// type describer interface {
+	// 	describer() string
+	// }
+
+	// var d describer = co
+	// fmt.Println("describer:", d.describer())
+
+	// // //  Generics //  //
+	// var m = map[int]string{1: "2", 2: "4", 4: "8"}
+	// fmt.Println("keys", MapKeys(m))
+
+	// _ = MapKeys[int, string](m)
+
+	// lst := List[int]{}
+	// lst.Push(10)
+	// lst.Push(13)
+	// lst.Push(23)
+	// fmt.Println("list:", lst.GetAll())
+
+	// // //  Errors //  //
+
+	// for _, i := range []int{7, 42} {
+	// 	if r, e := f1(i); e != nil {
+	// 		fmt.Println("f1 failed:", e)
+	// 	} else {
+	// 		fmt.Println("f1 worked:", r)
+	// 	}
+	// }
+
+	// for _, i := range []int{7, 42} {
+	// 	if r, e := f2(i); e != nil {
+	// 		fmt.Println("f2 failed:", e)
+	// 	} else {
+	// 		fmt.Println("f2 worked:", r)
+	// 	}
+	// }
+
+	// _, e := f2(42)
+	// if ae, ok := e.(*argError); ok {
+	// 	fmt.Println(ae.arg)
+	// 	fmt.Println(ae.prob)
+	// }
+
+	// // //  Goroutines //  //
+
+	f("direct")
+
+	go f("goroutine")
+
+	go func(msg string) {
+		fmt.Println(msg)
+	}("going")
+
+	time.Sleep(time.Second)
+	fmt.Println("done")
+
 }
